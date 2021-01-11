@@ -143,7 +143,7 @@ def write_headers(row, size, begin, end, label, style0, style1):
     ws_tyres.write(row,begin+1,"FR", style1)
     if(size>2):
         ws_tyres.write(row,begin+2,"RL", style1)
-        ws_tyres.write(row,begin+3,"RL", style1)
+        ws_tyres.write(row,begin+3,"RR", style1)
 
 
 ws_tyres.write(2,0,"Setup Name", style_header)
