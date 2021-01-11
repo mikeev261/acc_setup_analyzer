@@ -10,6 +10,9 @@ import code
 
 print("Hello world")
 
+#GLOBAL CONSTANTS
+ROW_OFFSET = 3
+
 #file_setup_json_0 = sys.argv[1]
 #file_setup_json_1 = sys.argv[2]
 
@@ -70,50 +73,11 @@ style_super_header.font.bold = True
 style_super_header.pattern = black_pattern
 style_super_header.alignment = align
 
-####################################
-
-#STEP 0: Import JSON 
-
-#data = json.load(file_setup_json_0)
-
-#df_setup_0 = pd.read_json(file_setup_json_0)
-
-#print(df_setup_0['tyres'])
-#file_setup_json_0.close()
-#file_setup_json_1.close()
 
 
 
+### Creating Workbook and Tabs ####################################
 
-
-
-
-
-def process_setup():
-    #TYRES
-
-    #--Headers
-    ws_tyres.write(2,0,"Setup Name", style_header)
-    ws_tyres.write(2,1,"Comp.", style_header)
-
-    #Take the cells to merge as r1, r2, c1, c2, and accept an optional style parameter.
-    ws_tyres.write_merge(1, 1, 2, 5, '----Pressures (PSI)----', style_super_header)
-
-    ws_tyres.write(2,2,"FL", style_header_blue)
-    ws_tyres.write(2,3,"FR", style_header_blue)
-    ws_tyres.write(2,4,"RL", style_header_blue)
-    ws_tyres.write(2,5,"RL", style_header_blue)
-
-    #--Data
-    #ws_tyres.write(3,0, setup_names[0])
-    #ws_tyres.write(4,0, setup_names[1])
-
-
-
-
-
-
-#STEP 2: Create XLS Workbook
 wb = xlwt.Workbook()
 
 #--Sheets
@@ -131,8 +95,78 @@ print(car_name) #Debug
 #--Car Name
 ws_tyres.write(0,0,car_name, style0) #Write the car name
 
+
+
+
+
+
+### Writing Headers ####################################
+ws_tyres.write(2,0,"Setup Name", style_header)
+ws_tyres.write(2,1,"Comp.", style_header)
+
+#--Take the cells to merge as r1, r2, c1, c2, and accept an optional style parameter.
+ws_tyres.write_merge(1, 1, 2, 5, '----Pressures (PSI)----', style_super_header)
+
+ws_tyres.write(2,2,"FL", style_header_blue)
+ws_tyres.write(2,3,"FR", style_header_blue)
+ws_tyres.write(2,4,"RL", style_header_blue)
+ws_tyres.write(2,5,"RL", style_header_blue)
+
+
+####################################
+
+#STEP 0: Import JSON 
+
+#data = json.load(file_setup_json_0)
+
+#df_setup_0 = pd.read_json(file_setup_json_0)
+
+#print(df_setup_0['tyres'])
+#file_setup_json_0.close()
+#file_setup_json_1.close()
+
+def setup_loop(row, df, col_offset, value_offset, value_divisor):
+    incr_offset = 0
+    for x in df:
+        incr = x/value_divisor
+        value = value_offset + incr
+        col = col_offset+incr_offset
+        ws_tyres.write(row, col, value) #Write Tyre Pressure (LR)
+        incr_offset+=1
+
+def process_setup(setup_num):
+    #TYRES
+    row = setup_num + ROW_OFFSET
+    #--Headers
+
+    if(df_setup[setup_num]['basicSetup']['tyres']['tyreCompound']):
+        tyreCompound = "Wet"
+    else: 
+        tyreCompound = "Dry"
+
+    #--Data
+    ws_tyres.write(row,0, setup_names[setup_num]) #Write Setup Name
+    ws_tyres.write(row,1, tyreCompound) #Write Tyre Compound
+
+    first_offset = 2
+    #Pressures
+    setup_loop(row, df_setup[setup_num]['basicSetup']['tyres']['tyrePressure'], first_offset, 20.3, 10)
+    #Camber
+    setup_loop(row, df_setup[setup_num]['basicSetup']['alignment']['camber'], first_offset+4, -4, 10)
+    #Toe
+    setup_loop(row, df_setup[setup_num]['basicSetup']['alignment']['toe'], first_offset+4+4, -.40, 100)
+    #CasterLF
+    ws_tyres.write(row, first_offset+4+4+4, df_setup[setup_num]['basicSetup']['alignment']['casterLF'])
+    #CasterRF
+    ws_tyres.write(row, first_offset+4+4+4+1, df_setup[setup_num]['basicSetup']['alignment']['casterRF'])
+    #SteeringRatio
+    ws_tyres.write(row, first_offset+4+4+4+1+1, df_setup[setup_num]['basicSetup']['alignment']['steerRatio'])
+
+
+
 #Step 3: Populate these sheets
-process_setup()
+for x in df_setup:
+    process_setup(x)
 
 ws_electronics.write(1, 0, datetime.now(), style1)
 ws_strategy.write(2, 0, 1)
