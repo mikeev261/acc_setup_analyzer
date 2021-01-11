@@ -8,7 +8,7 @@ from datetime import datetime
 import code
 
 
-print("Hello world")
+print("ACC Setup Analyzer")
 
 #GLOBAL CONSTANTS
 ROW_OFFSET = 3
@@ -55,6 +55,11 @@ style_header_blue = xlwt.easyxf('font: name Arial, color-index blue, bold on;  a
 style_header_red = xlwt.easyxf('font: name Arial, color-index red, bold on;  align: vert centre, horiz centre', 
     num_format_str='#,##0.00')
 
+style_header_green = xlwt.easyxf('font: name Arial, color-index green, bold on;  align: vert centre, horiz centre', 
+    num_format_str='#,##0.00')
+
+style_header_orange = xlwt.easyxf('font: name Arial, color-index orange, bold on;  align: vert centre, horiz centre', 
+    num_format_str='#,##0.00')
 ##################
 #Full XFStyle()
 
@@ -82,6 +87,8 @@ orange_pattern.pattern_fore_colour = xlwt.Style.colour_map['orange']
 align = xlwt.Alignment()
 align.horz = align.HORZ_CENTER
 align.vert = align.VERT_CENTER
+
+
 
 style_super_header_blue = xlwt.XFStyle()
 style_super_header_blue.font.colour_index = xlwt.Style.colour_map['white']
@@ -127,33 +134,35 @@ print(car_name) #Debug
 #--Car Name
 ws_tyres.write(0,0,car_name, style0) #Write the car name
 
-
-
-
-
-
 ### Writing Headers ####################################
+def write_headers(row, size, begin, end, label, style0, style1):
+    ws_tyres.write_merge(row-1, row-1, begin, end, label, style0)
+    ws_tyres.write(row,begin,"FL", style1)
+    ws_tyres.write(row,begin+1,"FR", style1)
+    if(size>2):
+        ws_tyres.write(row,begin+2,"RL", style1)
+        ws_tyres.write(row,begin+3,"RL", style1)
+
+
 ws_tyres.write(2,0,"Setup Name", style_header)
 ws_tyres.write(2,1,"Comp.", style_header)
 
 ###---PRESSURES
 #--Take the cells to merge as r1, r2, c1, c2, and accept an optional style parameter.
-ws_tyres.write_merge(1, 1, 2, 5, 'Pressures (PSI)', style_super_header_blue)
+write_headers(2, 4, 2, 5, 'Pressures (PSI)', style_super_header_blue, style_header_blue)
 
-ws_tyres.write(2,2,"FL", style_header_blue)
-ws_tyres.write(2,3,"FR", style_header_blue)
-ws_tyres.write(2,4,"RL", style_header_blue)
-ws_tyres.write(2,5,"RL", style_header_blue)
+###---CAMBER
+write_headers(2, 4, 6, 9, 'Camber', style_super_header_red, style_header_red)
 
+###---TOE
+write_headers(2, 4, 10, 13, 'Toe', style_super_header_green, style_header_green)
 
-###---PRESSURES
-#--Take the cells to merge as r1, r2, c1, c2, and accept an optional style parameter.
-ws_tyres.write_merge(1, 1, 6, 9, 'Camber', style_super_header_red)
+###---CASTER
+ws_tyres.write_merge(1, 1, 14, 15, 'Caster', style_super_header_orange)
+ws_tyres.write(2,14,"LF", style_header_orange)
+ws_tyres.write(2,15,"RF", style_header_orange)
 
-ws_tyres.write(2,6,"FL", style_header_red)
-ws_tyres.write(2,7,"FR", style_header_red)
-ws_tyres.write(2,8,"RL", style_header_red)
-ws_tyres.write(2,9,"RL", style_header_red)
+###---STEERING RATIO
 
 ####################################
 
@@ -181,6 +190,7 @@ def process_setup(setup_num):
     row = setup_num + ROW_OFFSET
     #--Headers
 
+    print(df_setup[setup_num]['basicSetup']['tyres']['tyreCompound'])
     if(df_setup[setup_num]['basicSetup']['tyres']['tyreCompound']):
         tyreCompound = "Wet"
     else: 
