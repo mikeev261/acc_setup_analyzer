@@ -44,7 +44,9 @@ while more_args:
 #STEP 1: Define XLS Styles
 style0 = xlwt.easyxf('font: name Arial, color-index red, bold on',
     num_format_str='#,##0.00')
-style1 = xlwt.easyxf(num_format_str='D-MMM-YY')
+
+style_2_dec = xlwt.easyxf(num_format_str='0.00')
+style_1_dec = xlwt.easyxf(num_format_str='0.0')
 
 style_header = xlwt.easyxf('font: name Arial, color-index black, bold on;  align: vert centre, horiz centre', 
     num_format_str='#,##0.00')
@@ -163,7 +165,8 @@ ws_tyres.write(2,14,"LF", style_header_orange)
 ws_tyres.write(2,15,"RF", style_header_orange)
 
 ###---STEERING RATIO
-
+ws_tyres.write(2,16,"Steer Ratio", style_header)
+\
 ####################################
 
 #STEP 0: Import JSON 
@@ -176,13 +179,13 @@ ws_tyres.write(2,15,"RF", style_header_orange)
 #file_setup_json_0.close()
 #file_setup_json_1.close()
 
-def setup_loop(row, df, col_offset, value_offset, value_divisor):
+def setup_loop(row, df, col_offset, value_offset, value_divisor, style):
     incr_offset = 0
     for x in df:
         incr = x/value_divisor
         value = value_offset + incr
         col = col_offset+incr_offset
-        ws_tyres.write(row, col, value) #Write Tyre Pressure (LR)
+        ws_tyres.write(row, col, value, style) #Write Tyre Pressure (LR)
         incr_offset+=1
 
 def process_setup(setup_num):
@@ -202,15 +205,15 @@ def process_setup(setup_num):
 
     first_offset = 2
     #Pressures
-    setup_loop(row, df_setup[setup_num]['basicSetup']['tyres']['tyrePressure'], first_offset, 20.3, 10)
+    setup_loop(row, df_setup[setup_num]['basicSetup']['tyres']['tyrePressure'], first_offset, 20.3, 10, style_1_dec)
     #Camber
-    setup_loop(row, df_setup[setup_num]['basicSetup']['alignment']['camber'], first_offset+4, -4, 10)
+    setup_loop(row, df_setup[setup_num]['basicSetup']['alignment']['camber'], first_offset+4, -4, 10, style_1_dec)
     #Toe
-    setup_loop(row, df_setup[setup_num]['basicSetup']['alignment']['toe'], first_offset+4+4, -.40, 100)
+    setup_loop(row, df_setup[setup_num]['basicSetup']['alignment']['toe'], first_offset+4+4, -.40, 100, style_2_dec)
     #CasterLF
-    ws_tyres.write(row, first_offset+4+4+4, df_setup[setup_num]['basicSetup']['alignment']['casterLF'])
+    ws_tyres.write(row, first_offset+4+4+4, df_setup[setup_num]['basicSetup']['alignment']['casterLF'], style_1_dec)
     #CasterRF
-    ws_tyres.write(row, first_offset+4+4+4+1, df_setup[setup_num]['basicSetup']['alignment']['casterRF'])
+    ws_tyres.write(row, first_offset+4+4+4+1, df_setup[setup_num]['basicSetup']['alignment']['casterRF'], style_1_dec)
     #SteeringRatio
     ws_tyres.write(row, first_offset+4+4+4+1+1, df_setup[setup_num]['basicSetup']['alignment']['steerRatio'])
 
@@ -220,7 +223,7 @@ def process_setup(setup_num):
 for x in df_setup:
     process_setup(x)
 
-ws_electronics.write(1, 0, datetime.now(), style1)
+#ws_electronics.write(1, 0, datetime.now(), style1)
 ws_strategy.write(2, 0, 1)
 ws_mechanical.write(2, 1, 1)
 ws_aero.write(2, 2, xlwt.Formula("A3+B3"))
