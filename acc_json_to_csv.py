@@ -52,28 +52,60 @@ style_header = xlwt.easyxf('font: name Arial, color-index black, bold on;  align
 style_header_blue = xlwt.easyxf('font: name Arial, color-index blue, bold on;  align: vert centre, horiz centre', 
     num_format_str='#,##0.00')
 
+style_header_red = xlwt.easyxf('font: name Arial, color-index red, bold on;  align: vert centre, horiz centre', 
+    num_format_str='#,##0.00')
+
 ##################
 #Full XFStyle()
 
-style_super_header = xlwt.XFStyle()
+
 
 #Basic black background
-black_pattern = xlwt.Pattern()
-black_pattern.pattern = xlwt.Pattern.SOLID_PATTERN
-black_pattern.pattern_fore_colour = xlwt.Style.colour_map['blue']
+blue_pattern = xlwt.Pattern()
+blue_pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+blue_pattern.pattern_fore_colour = xlwt.Style.colour_map['blue']
+
+red_pattern = xlwt.Pattern()
+red_pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+red_pattern.pattern_fore_colour = xlwt.Style.colour_map['red']
+
+green_pattern = xlwt.Pattern()
+green_pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+green_pattern.pattern_fore_colour = xlwt.Style.colour_map['green']
+
+orange_pattern = xlwt.Pattern()
+orange_pattern.pattern = xlwt.Pattern.SOLID_PATTERN
+orange_pattern.pattern_fore_colour = xlwt.Style.colour_map['orange']
+
 
 #Alignment 
 align = xlwt.Alignment()
 align.horz = align.HORZ_CENTER
 align.vert = align.VERT_CENTER
 
+style_super_header_blue = xlwt.XFStyle()
+style_super_header_blue.font.colour_index = xlwt.Style.colour_map['white']
+style_super_header_blue.font.bold = True
+style_super_header_blue.pattern = blue_pattern
+style_super_header_blue.alignment = align
 
-style_super_header.font.colour_index = xlwt.Style.colour_map['white']
-style_super_header.font.bold = True
-style_super_header.pattern = black_pattern
-style_super_header.alignment = align
+style_super_header_red = xlwt.XFStyle()
+style_super_header_red.font.colour_index = xlwt.Style.colour_map['white']
+style_super_header_red.font.bold = True
+style_super_header_red.pattern = red_pattern
+style_super_header_red.alignment = align
 
+style_super_header_green = xlwt.XFStyle()
+style_super_header_green.font.colour_index = xlwt.Style.colour_map['white']
+style_super_header_green.font.bold = True
+style_super_header_green.pattern = green_pattern
+style_super_header_green.alignment = align
 
+style_super_header_orange = xlwt.XFStyle()
+style_super_header_orange.font.colour_index = xlwt.Style.colour_map['white']
+style_super_header_orange.font.bold = True
+style_super_header_orange.pattern = orange_pattern
+style_super_header_orange.alignment = align
 
 
 ### Creating Workbook and Tabs ####################################
@@ -104,14 +136,24 @@ ws_tyres.write(0,0,car_name, style0) #Write the car name
 ws_tyres.write(2,0,"Setup Name", style_header)
 ws_tyres.write(2,1,"Comp.", style_header)
 
+###---PRESSURES
 #--Take the cells to merge as r1, r2, c1, c2, and accept an optional style parameter.
-ws_tyres.write_merge(1, 1, 2, 5, '----Pressures (PSI)----', style_super_header)
+ws_tyres.write_merge(1, 1, 2, 5, 'Pressures (PSI)', style_super_header_blue)
 
 ws_tyres.write(2,2,"FL", style_header_blue)
 ws_tyres.write(2,3,"FR", style_header_blue)
 ws_tyres.write(2,4,"RL", style_header_blue)
 ws_tyres.write(2,5,"RL", style_header_blue)
 
+
+###---PRESSURES
+#--Take the cells to merge as r1, r2, c1, c2, and accept an optional style parameter.
+ws_tyres.write_merge(1, 1, 6, 9, 'Camber', style_super_header_red)
+
+ws_tyres.write(2,6,"FL", style_header_red)
+ws_tyres.write(2,7,"FR", style_header_red)
+ws_tyres.write(2,8,"RL", style_header_red)
+ws_tyres.write(2,9,"RL", style_header_red)
 
 ####################################
 
